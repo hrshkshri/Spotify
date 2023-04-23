@@ -1,6 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const passport = require("passport");
+const { Strategy, ExtractJwt } = require("passport-jwt");
+const User = require("./models/User");
+
 const app = express();
 
 mongoose
@@ -19,6 +23,31 @@ mongoose
   .catch((error) => {
     console.error("Error connecting to MongoDB Atlas:", error);
   });
+
+// passport-jwt setup
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET,
+};
+ 
+passport.use(
+  new Strategy(options, async (payload, done) => {
+    try {
+      // Find the user associated with the token
+      const user = await User.findById(payload.id);
+
+      // If user not found, return null
+      if (!user) {
+        return done(null, false);
+      }
+
+      // Otherwise, return the user
+      done(null, user);
+    } catch (error) {
+      done(error, false);
+    }
+  })
+);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
