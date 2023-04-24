@@ -4,8 +4,10 @@ require("dotenv").config();
 const passport = require("passport");
 const { Strategy, ExtractJwt } = require("passport-jwt");
 const User = require("./models/User");
+const authRoutes = require("./routes/auth");
 
 const app = express();
+app.use(express.json());
 
 mongoose
   .connect(
@@ -29,7 +31,7 @@ const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: process.env.JWT_SECRET,
 };
- 
+
 passport.use(
   new Strategy(options, async (payload, done) => {
     try {
@@ -52,6 +54,8 @@ passport.use(
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
+
+app.use("/auth", authRoutes);
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");

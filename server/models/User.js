@@ -17,17 +17,17 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  likedSongs: {
-    //we will change
-    default: "",
-  },
-  likedPlaylists: {
-    //we will change
-    default: "",
-  },
-  subcribedArtist: {
-    default: "",
-  },
+  // likedSongs: {
+  //   //we will change
+  //   default: "",
+  // },
+  // likedPlaylists: {
+  //   //we will change
+  //   default: "",
+  // },
+  // subcribedArtist: {
+  //   default: "",
+  // },
 });
 
 const User = mongoose.model("User", userSchema);
