@@ -1,11 +1,42 @@
-// const jwt = require("jwt");
 const bcrypt = require("bcrypt");
-const passport = require("passport");
 const router = require("express").Router();
 const User = require("../models/User");
 const { getToken } = require("../utils/helpers");
 
 // Endpoint for user registration
 router.post("/register", async (req, res) => {
-    //
+  const { username, firstName, lastName, email, password } = req.body;
+
+  // Check if user with given email already exists
+  const userExists = await User.findOne({ email: email });
+  if (userExists) {
+    return res.status(409).json({ message: "Email already registered" });
+  }
+
+  // Create new user object
+
+  // Hash the password
+
+  const salt = 10;
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const newUser = new User({
+    username,
+    firstName,
+    lastName,
+    email,
+    password: hashedPassword,
+  });
+  // Save user to database
+  try {
+    await user.save();
+    // Generate JWT token
+    const token = await getToken(email, newUser);
+
+    // return the result to user (ie token and newUser)
+
+    res.json({ ...newUser.toJSON(), token }); // it will return status(200) by default
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
 });
