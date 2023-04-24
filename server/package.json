@@ -9,8 +9,10 @@
   "author": "harsh keshari",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^5.3.0",
     "mongoose": "^7.0.4",
     "passport": "^0.6.0",
