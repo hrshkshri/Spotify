@@ -19,6 +19,7 @@ router.post("/register", async (req, res) => {
 
   const salt = 10;
   const hashedPassword = await bcrypt.hash(password, salt);
+  // console.log(hashedPassword);
 
   const newUser = new User({
     username,
@@ -52,6 +53,10 @@ router.post("/login", async (req, res) => {
   }
 
   // Compare password
+  if (!user.password) {
+    return res.status(500).json({ message: "User password not set" });
+  }
+
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
     return res.status(401).json({ message: "Invalid password" });

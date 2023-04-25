@@ -10,10 +10,10 @@ router.post(
     try {
       // Create a new song object from request body
       const { title, imgUrl, audioUrl } = req.body;
-      const artist = req.user._id;
+    //   const artist = req.user._id;
       const createdSong = new Song({
         title,
-        artist,
+        // artist,
         imgUrl,
         audioUrl,
       });

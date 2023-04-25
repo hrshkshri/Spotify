@@ -17,6 +17,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   // likedSongs: {
   //   //we will change
   //   default: "",
