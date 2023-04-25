@@ -5,6 +5,7 @@ const passport = require("passport");
 const { Strategy, ExtractJwt } = require("passport-jwt");
 const User = require("./models/User");
 const authRoutes = require("./routes/auth");
+const songRoutes = require("./routes/song");
 
 const app = express();
 app.use(express.json());
@@ -56,6 +57,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/song", songRoutes);
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
