@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-function getToken(userId) {
+function getToken(email, userId) {
   const token = jwt.sign({ identifier: userId }, process.env.JWT_SECRET);
   return token;
 }
