@@ -30,4 +30,21 @@ router.post(
   }
 );
 
+router.get(
+  "/mysongs",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      // Find all songs created by the currently logged in user
+      const songs = await Song.find({ artist: req.user._id });
+
+      // Return the songs to the client
+      res.json(songs);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Server error" });
+    }
+  }
+);
+
 module.exports = router;

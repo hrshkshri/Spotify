@@ -29,7 +29,7 @@ router.post("/register", async (req, res) => {
   });
   // Save user to database
   try {
-    await user.save();
+    await newUser.save();
     // Generate JWT token
     const token = await getToken(email, newUser);
 
