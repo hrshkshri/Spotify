@@ -41,4 +41,27 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// Endpoint for user login
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  // Check if user with given email exists
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(404).json({ message: "Email not found" });
+  }
+
+  // Compare password
+  const passwordMatch = await bcrypt.compare(password, user.password);
+  if (!passwordMatch) {
+    return res.status(401).json({ message: "Invalid password" });
+  }
+
+  // Generate JWT token
+  const token = await getToken(user.email, user);
+
+  // return the result to user (ie token and user)
+  res.json({ ...user.toJSON(), token }); // it will return status(200) by default
+});
+
 module.exports = router;
