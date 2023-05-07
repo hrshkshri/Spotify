@@ -15,7 +15,7 @@ const songSchema = new mongoose.Schema({
   },
   duration: {
     type: Number,
-    required: true,
+    // required: true,
   },
   genre: {
     type: String,
