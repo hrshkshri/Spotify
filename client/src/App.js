@@ -1,13 +1,14 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./routes/Login";
 
 function App() {
   return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">Hello world!</h1>
+    <div className="w-screen h-screen font-poppins">
       <BrowserRouter>
+        <Routes></Routes>
         <Routes>
-          <Route></Route>
+          <Route path="/login" element={<Login />} />
         </Routes>
       </BrowserRouter>
     </div>
