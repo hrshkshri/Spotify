@@ -1,0 +1,48 @@
+project-root/
+├── server/
+│   ├── config/
+│   │   ├── db.js
+│   │   └── keys.js
+│   ├── controllers/
+│   │   ├── auth.js
+│   │   ├── playlist.js
+│   │   ├── song.js
+│   │   └── user.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── upload.js
+│   ├── models/
+│   │   ├── Playlist.js
+│   │   ├── Song.js
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── playlist.js
+│   │   ├── song.js
+│   │   └── user.js
+│   ├── uploads/
+│   ├── utils/
+│   ├── app.js
+│   ├── package.json
+│   ├── package-lock.json
+│   └── server.js
+├── client/
+│   ├── public/
+│   │   ├── index.html
+│   │   ├── manifest.json
+│   │   └── robots.txt
+│   ├── src/
+│   │   ├── components/
+│   │   ├── contexts/
+│   │   ├── pages/
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   ├── reportWebVitals.js
+│   │   ├── setupTests.js
+│   │   └── index.css
+│   ├── package.json
+│   ├── package-lock.json
+│   └── README.md
+├── .gitignore
+├── package.json
+└── README.md

@@ -7,8 +7,10 @@ const User = require("./models/User");
 const authRoutes = require("./routes/auth");
 const songRoutes = require("./routes/song");
 const playlistRoutes = require("./routes/playlist");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 mongoose
@@ -61,6 +63,6 @@ app.use("/auth", authRoutes);
 app.use("/song", songRoutes);
 app.use("/playlist", playlistRoutes);
 
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
+app.listen(8000, () => {
+  console.log("Server listening on port 8000");
 });
