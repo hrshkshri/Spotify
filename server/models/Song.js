@@ -1,34 +1,24 @@
 const mongoose = require("mongoose");
 
-const songSchema = new mongoose.Schema({
-  title: {
+const Song = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  thumbnail: {
+    type: String,
+    required: true,
+  },
+  track: {
     type: String,
     required: true,
   },
   artist: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Artist",
-    required: true,
-  },
-  album: {
-    type: String,
-  },
-  duration: {
-    type: Number,
-    // required: true,
-  },
-  genre: {
-    type: String,
-  },
-  imageUrl: {
-    type: String,
-  },
-  audioUrl: {
-    type: String,
-    required: true,
+    type: mongoose.Types.ObjectId,
+    ref: "User",
   },
 });
 
-const Song = mongoose.model("Song", songSchema);
+const SongModel = mongoose.model("Song", Song);
 
-module.exports = Song;
+module.exports = SongModel;
