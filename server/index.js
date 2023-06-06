@@ -1,8 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const JwtStrategy = require("passport-jwt").Strategy,
+  ExtractJwt = require("passport-jwt").ExtractJwt;
 const passport = require("passport");
-const { Strategy, ExtractJwt } = require("passport-jwt");
 const User = require("./models/User");
 const authRoutes = require("./routes/auth");
 const songRoutes = require("./routes/song");
@@ -31,27 +32,24 @@ mongoose
   });
 
 // passport-jwt setup
-const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.JWT_SECRET,
-};
+let opts = {};
+opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+opts.secretOrKey = process.env.JWT_SECRET;
 
 passport.use(
-  new Strategy(options, async (payload, done) => {
-    try {
-      // Find the user associated with the token
-      const user = await User.findById(payload.id);
-
-      // If user not found, return null
-      if (!user) {
-        return done(null, false);
+  new JwtStrategy(opts, function (jwt_payload, done) {
+    User.findOne({ _id: jwt_payload.identifier }, function (err, user) {
+      // done(error, doesTheUserExist)
+      if (err) {
+        return done(err, false);
       }
-
-      // Otherwise, return the user
-      done(null, user);
-    } catch (error) {
-      done(error, false);
-    }
+      if (user) {
+        return done(null, user);
+      } else {
+        return done(null, false);
+        // or you could create a new account
+      }
+    });
   })
 );
 
