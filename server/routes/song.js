@@ -1,85 +1,67 @@
-const router = require("express").Router();
-const Song = require("../models/Song");
+const express = require("express");
+const router = express.Router();
 const passport = require("passport");
+const Song = require("../models/Song");
+const User = require("../models/User");
 
-// Endpoint for creating a new song
 router.post(
   "/create",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    try {
-      // Create a new song object from request body
-      const { title, imgUrl, audioUrl } = req.body;
-      const artist = req.user._id;
-      const createdSong = new Song({
-        title,
-        artist,
-        imgUrl,
-        audioUrl,
-      });
-
-      // Save the new song to the database
-      await createdSong.save();
-
-      // Return the new song object to the client
-      res.json(createdSong);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error or insufficient details" });
+    // req.user getss the user because of passport.authenticate
+    const { name, thumbnail, track } = req.body;
+    if (!name || !thumbnail || !track) {
+      return res
+        .status(301)
+        .json({ err: "Insufficient details to create song." });
     }
+    const artist = req.user._id;
+    const songDetails = { name, thumbnail, track, artist };
+    const createdSong = await Song.create(songDetails);
+    return res.status(200).json(createdSong);
   }
 );
 
+// Get route to get all songs I have published.
 router.get(
-  "/mysongs",
+  "/get/mysongs",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
-    try {
-      // Find all songs created by the currently logged in user
-      const songs = await Song.find({ artist: req.user._id });
-
-      // Return the songs to the client
-      res.json(songs);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Server error" });
-    }
+    // We need to get all songs where artist id == currentUser._id
+    const songs = await Song.find({ artist: req.user._id }).populate("artist");
+    return res.status(200).json({ data: songs });
   }
 );
+
+// Get route to get all songs any artist has published
 router.get(
-    "/artist/:artistId",
-    passport.authenticate("jwt", { session: false }),
-    async (req, res) => {
-      try {
-        const { artistId } = req.params;
-        // Find all songs created by the artist with the given ID
-        const songs = await Song.find({ artist: artistId });
-  
-        // Return the songs to the client
-        res.json(songs);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
-      }
+  "/get/artist/:artistId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { artistId } = req.params;
+    // We can check if the artist does not exist
+    const artist = await User.findOne({ _id: artistId });
+    if (!artist) {
+      return res.status(301).json({ err: "Artist does not exist" });
     }
-  );
-  
-  router.get(
-    "/title/:title",
-    passport.authenticate("jwt", { session: false }),
-    async (req, res) => {
-      try {
-        const { title } = req.params;
-        // Find all songs with the given title
-        const songs = await Song.find({ title: title });
-  
-        // Return the songs to the client
-        res.json(songs);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error" });
-      }
-    }
-  );
-  
+
+    const songs = await Song.find({ artist: artistId });
+    return res.status(200).json({ data: songs });
+  }
+);
+
+// Get route to get a single song by name
+router.get(
+  "/get/songname/:songName",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { songName } = req.params;
+
+    // name:songName --> exact name matching. Vanilla, Vanila
+    // Pattern matching instead of direct name matching.
+    const songs = await Song.find({ name: songName });
+    return res.status(200).json({ data: songs });
+  }
+);
+
 module.exports = router;

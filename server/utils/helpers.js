@@ -1,10 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-function getToken(email, userId) {
-  const token = jwt.sign({ identifier: userId }, process.env.JWT_SECRET);
-  return token;
-}
+exports = {};
 
-module.exports = {
-  getToken,
+exports.getToken = async (email, user) => {
+  // Assume this code is complete
+  const token = jwt.sign({ identifier: user._id }, process.env.JWT_SECRET);
+  return token;
 };
+
+module.exports = exports;

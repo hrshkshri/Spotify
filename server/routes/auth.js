@@ -1,71 +1,70 @@
-const bcrypt = require("bcrypt");
-const router = require("express").Router();
+const express = require("express");
+const router = express.Router();
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 const { getToken } = require("../utils/helpers");
 
-// Endpoint for user registration
+// This POST route will help to register a user
 router.post("/register", async (req, res) => {
-  const { username, firstName, lastName, email, password } = req.body;
+  // This code is run when the /register api is called as a POST request
 
-  // Check if user with given email already exists
-  const userExists = await User.findOne({ email: email });
-  if (userExists) {
-    return res.status(409).json({ message: "Email already registered" });
+  // My req.body will be of the format {email, password, firstName, lastName, username }
+  const { email, password, firstName, lastName, username } = req.body;
+
+  // Step 2 : Does a user with this email already exist? If yes, we throw an error.
+  const user = await User.findOne({ email: email });
+  if (user) {
+    // status code by default is 200
+    return res
+      .status(403)
+      .json({ error: "A user with this email already exists" });
   }
 
-  // Create new user object
-
-  // Hash the password
-
-  const salt = 10;
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const newUser = new User({
-    username,
-    firstName,
-    lastName,
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUserData = {
     email,
     password: hashedPassword,
-  });
-  // Save user to database
-  try {
-    await newUser.save();
-    // Generate JWT token
-    const token = await getToken(email, newUser);
+    firstName,
+    lastName,
+    username,
+  };
+  const newUser = await User.create(newUserData);
+  console.log(newUserData);
 
-    // return the result to user (ie token and newUser)
+  // Step 4: We want to create the token to return to the user
+  const token = await getToken(email, newUser);
 
-    res.json({ ...newUser.toJSON(), token }); // it will return status(200) by default
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
+  // Step 5: Return the result to the user
+  const userToReturn = { ...newUser.toJSON(), token };
+  console.log(userToReturn);
+  delete userToReturn.password;
+  return res.status(200).json(userToReturn);
 });
 
-// Endpoint for user login
 router.post("/login", async (req, res) => {
+  // Step 1: Get email and password sent by user from req.body
   const { email, password } = req.body;
 
-  // Check if user with given email exists
+  // Step 2: Check if a user with the given email exists. If not, the credentials are invalid.
   const user = await User.findOne({ email: email });
   if (!user) {
-    return res.status(404).json({ message: "Email not found" });
+    return res.status(403).json({ err: "Invalid credentials" });
   }
 
-  // Compare password
-  if (!user.password) {
-    return res.status(500).json({ message: "User password not set" });
+  console.log(user);
+
+  // Step 3: If the user exists, check if the password is correct. If not, the credentials are invalid.
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  // This will be true or false.
+  if (!isPasswordValid) {
+    return res.status(403).json({ err: "Invalid credentials" });
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) {
-    return res.status(401).json({ message: "Invalid password" });
-  }
-
-  // Generate JWT token
+  // Step 4: If the credentials are correct, return a token to the user.
   const token = await getToken(user.email, user);
-
-  // return the result to user (ie token and user)
-  res.json({ ...user.toJSON(), token }); // it will return status(200) by default
+  const userToReturn = { ...user.toJSON(), token };
+  delete userToReturn.password;
+  return res.status(200).json(userToReturn);
 });
 
 module.exports = router;
